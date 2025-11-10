@@ -1,3 +1,52 @@
+# Functions CLI Commands
+
+```bash
+cd functions
+```
+
+```bash
+npx expo start
+```
+
+firebase logout and login again
+
+```bash
+firebase login
+```
+
+```bash
+cd functions
+npm run build
+```
+
+```bash
+npx eslint --ext .js,.ts . --fix
+```
+
+Try deploying specific functions: Instead of deploying all functions at once, you can try deploying just the new function:
+
+```bash
+firebase deploy --only functions:onUserCreate
+firebase deploy --only functions:checkBudgetAlert
+
+```
+
+```bash
+firebase deploy --only functions
+```
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+```bash
+firebase deploy
+```
+
+```bash
+firebase deploy --only firestore:rules
+```
+
 # Firebase Service Account Setup
 
 To run admin scripts locally, you need to create a service account key file:
