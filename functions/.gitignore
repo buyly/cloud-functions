@@ -1,0 +1,21 @@
+
+
+# TypeScript v1 declaration files
+typings/
+
+# Node.js dependency directory
+node_modules/
+*.local
+
+# Compiled JavaScript files
+lib/**/*.js
+lib/**/*.js.map
+lib
+lib/**/*.html
+lib/email-templates/daily-report/index.html
+lib/email-templates/daily-report/index.html
+lib/email-templates/daily-report/index.html
+
+functions/lib/**  
+functions/lib/email-templates/daily-report/index.html
+functions/service-account-key.json

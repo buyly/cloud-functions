@@ -1,53 +1,53 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# TypeScript v1 declaration files
-typings/
-
-# Node.js dependency directory
+# dependencies
 node_modules/
-*.local
 
-# Compiled JavaScript files
-lib/**/*.js
-lib/**/*.js.map
-lib
-lib/**/*.html
-lib/email-templates/daily-report/index.html
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
 
-# Service account keys and credentials (NEVER commit these!)
-service-account-key.json
-**/service-account-key.json
-*.pem
+# Native
+*.orig.*
+*.jks
+*.p8
 *.p12
-credentials.json
+*.key
+*.mobileprovision
 
-# Environment variables
-.env
-.env.local
-.env.*.local
+# Metro
+.metro-health-check*
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 
-# OS
+# macOS
 .DS_Store
-Thumbs.db
+*.pem
+
+# local env files
+.env*.local
+.env.local
+.env
+
+# typescript
+*.tsbuildinfo
 
 # Firebase
-.firebase/
-firebase-debug.log
-firestore-debug.log
-ui-debug.log
+google-services.json
+GoogleService-Info.plist
 
-# Package manager
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+app-example
+android
+ios
+.vercel
 
-# Build output
-dist/
-build/
-packages/*/dist/
+
+functions/firebase-debug.log
+
+.env.local
+functions/service-account-key.json

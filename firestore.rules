@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global helper functions
+    function isSignedIn() { 
+      return request.auth != null; 
+    }
+    
+    function isAdmin() { 
+      return isSignedIn() && request.auth.token.role == "admin"; 
+    }
+    
+    function isOwner(userId) { 
+      return isSignedIn() && request.auth.uid == userId; 
+    }
+    
+    // Todos collection
+    match /todos/{todoId} {
+      allow read: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
+      allow update, delete: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+    
+    // Grocery items collection
+    match /grocery-items/{groceryItemId} {
+      allow read: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
+      allow update, delete: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+    
+    // History items collection
+    match /history-items/{historyItemId} {
+      allow read: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
+      allow update, delete: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+    
+    // Recent search items collection
+    match /recent-search-items/{recentSearchItemId} {
+      allow read: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
+      allow update, delete: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow create: if isOwner(userId);
+      allow read: if isOwner(userId) || isAdmin();
+      allow update, delete: if isOwner(userId) || isAdmin();
+    }
+    
+    // Grocery lists collection
+    match /grocery-lists/{groceryListId} {
+      // Users can read lists where they are the owner or a member
+      allow read: if isSignedIn() && (
+        isAdmin() ||
+        resource.data.owner == request.auth.uid ||
+        request.auth.uid in resource.data.members
+      );
+      // Users can create lists where they set themselves as the owner
+      allow create: if isSignedIn() && (
+        isAdmin() ||
+        request.resource.data.owner == request.auth.uid
+      );
+      // Only the owner can update or delete the list
+      allow update, delete: if isSignedIn() && (
+        isAdmin() ||
+        resource.data.owner == request.auth.uid
+      );
+    }
+    
+    // Store cards collection
+    match /store-cards/{storeCardId} {
+      allow read: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid || resource.data.isPublic == true);
+      allow create: if isSignedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
+      allow update, delete: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+    
+    // Feedback collection
+    match /feedback/{feedbackId} {
+      allow read: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+    
+    // Budget alerts collection
+    match /budget-alerts/{budgetAlertId} {
+      allow read: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+  }
+}
