@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Alert - Buyly</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        .alert-icon {
+            font-size: 48px;
+            color: #FFC107;
+            margin-bottom: 20px;
+        }
+        .budget-stats {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .stat-label {
+            font-weight: 600;
+            color: #666;
+        }
+        .stat-value {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFC107 0%, #FF9800 100%);
+            transition: width 0.3s ease;
+        }
+        .percentage {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFC107;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .message {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        .cta-button:hover {
+            background: linear-gradient(135deg, #45a049 0%, #4CAF50 100%);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            color: #888;
+        }
+        .tips {
+            background-color: #e8f5e8;
+            border-left: 4px solid #4CAF50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .tips h3 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+        .tip-list {
+            margin: 10px 0;
+        }
+        .tip-list li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Buyly</div>
+            <div class="alert-icon">⚠️</div>
+            <h1 style="color: #FFC107; margin: 0;">Budget Alert</h1>
+            <p style="margin: 10px 0 0; color: #666;">You've reached 50% of your monthly budget</p>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <p>Hi <strong>__USER_NAME__</strong>,</p>
+            <p>We wanted to let you know that you've spent <strong>50% or more</strong> of your monthly grocery budget.</p>
+        </div>
+
+        <div class="budget-stats">
+            <div class="stat-row">
+                <span class="stat-label">Monthly Budget:</span>
+                <span class="stat-value" style="color: #4CAF50;">R__MONTHLY_BUDGET__</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Amount Spent:</span>
+                <span class="stat-value" style="color: #FFC107;">R__AMOUNT_SPENT__</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Remaining:</span>
+                <span class="stat-value" style="color: #666;">R__REMAINING_BUDGET__</span>
+            </div>
+        </div>
+
+        <div class="percentage">__PERCENTAGE_SPENT__% Used</div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: __PERCENTAGE_SPENT__%;"></div>
+        </div>
+
+        <div class="message">
+            <h3 style="color: #856404; margin-top: 0;">💡 Budget Reminder</h3>
+            <p style="margin-bottom: 0;">You still have <strong>R__REMAINING_BUDGET__</strong> left for the rest of the month. Consider reviewing your upcoming shopping plans to stay within budget.</p>
+        </div>
+
+        <div class="tips">
+            <h3>💰 Money-Saving Tips</h3>
+            <ul class="tip-list">
+                <li>Compare prices across different stores using Buyly's price tracking</li>
+                <li>Look for weekly specials and discounts</li>
+                <li>Consider generic brands for non-essential items</li>
+                <li>Plan your meals ahead to avoid impulse purchases</li>
+                <li>Use your shopping list to stay focused</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://buyly.co.za" class="cta-button">
+                Open Buyly App
+            </a>
+        </div>
+
+        <div class="footer">
+            <p><strong>Buyly</strong> - Your Smart Shopping Companion</p>
+            <p>This is an automated budget alert. You can manage your budget settings in the app.</p>
+            <p style="font-size: 12px; color: #aaa;">
+                © 2024 Buyly. All rights reserved.<br>
+                If you no longer wish to receive these alerts, you can disable them in your app settings.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

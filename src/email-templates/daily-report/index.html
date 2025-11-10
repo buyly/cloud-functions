@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Analytics Dashboard</title>
+    <!--[if mso]>
+      <noscript>
+        <xml>
+          <o:OfficeDocumentSettings>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+          </o:OfficeDocumentSettings>
+        </xml>
+      </noscript>
+    <![endif]-->
+    <style>
+      @media only screen and (max-width: 600px) {
+        .container {
+          width: 100% !important;
+        }
+        .column {
+          display: block !important;
+          width: 100% !important;
+          padding: 0 !important;
+          margin-bottom: 20px !important;
+        }
+        .card {
+          margin-bottom: 20px !important;
+        }
+      }
+    </style>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8fafc;
+    "
+  >
+    <table
+      role="presentation"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      align="center"
+      width="100%"
+      style="
+        max-width: 600px;
+        margin: auto;
+        background-color: #ffffff;
+        border-radius: 12px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      "
+    >
+      <tr>
+        <td
+          style="
+            padding: 40px 30px 20px 30px;
+            text-align: center;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            border-radius: 12px 12px 0 0;
+          "
+        >
+          <h1
+            style="color: #ffffff; font-size: 28px; margin: 0; font-weight: 600"
+          >
+            Buyly App Daily Report
+          </h1>
+          <p style="color: #e2e8f0; margin: 10px 0 0 0; font-size: 16px">
+            Your daily shopping analytics overview
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 30px">
+          <p style="margin: 0 0 20px 0">
+            <a
+              href="https://console.firebase.google.com/project/getbuyly/firestore/databases/-default-/data/~2Fgrocery-items"
+              style="
+                color: #2563eb;
+                text-decoration: none;
+                font-weight: 500;
+                display: inline-block;
+                padding: 8px 16px;
+                background-color: #f1f5f9;
+                border-radius: 6px;
+              "
+              >View detailed information in Firebase →</a
+            >
+          </p>
+          <table
+            role="presentation"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            width="100%"
+          >
+            <tr>
+              <td class="column" width="50%" style="padding-right: 10px">
+                <table
+                  role="presentation"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                  width="100%"
+                  class="card"
+                  style="
+                    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                    border-radius: 12px;
+                    border: 1px solid #e2e8f0;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 24px; text-align: center">
+                      <h2
+                        style="
+                          color: #1e293b;
+                          font-size: 42px;
+                          font-weight: bold;
+                          margin: 0 0 12px 0;
+                        "
+                      >
+                        __USERS_COUNT__
+                      </h2>
+                      <p
+                        style="
+                          color: #64748b;
+                          font-size: 15px;
+                          margin: 0;
+                          font-weight: 500;
+                        "
+                      >
+                        Total Users
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td class="column" width="50%" style="padding-left: 10px">
+                <table
+                  role="presentation"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                  width="100%"
+                  class="card"
+                  style="
+                    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                    border-radius: 12px;
+                    border: 1px solid #e2e8f0;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 24px; text-align: center">
+                      <h2
+                        style="
+                          color: #1e293b;
+                          font-size: 42px;
+                          font-weight: bold;
+                          margin: 0 0 12px 0;
+                        "
+                      >
+                        __GROCERY_ITEMS_COUNT__
+                      </h2>
+                      <p
+                        style="
+                          color: #64748b;
+                          font-size: 15px;
+                          margin: 0;
+                          font-weight: 500;
+                        "
+                      >
+                        Total Grocery Items
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="column"
+                width="50%"
+                style="padding-right: 10px; padding-top: 20px"
+              >
+                <table
+                  role="presentation"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                  width="100%"
+                  class="card"
+                  style="
+                    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                    border-radius: 12px;
+                    border: 1px solid #e2e8f0;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 24px; text-align: center">
+                      <h2
+                        style="
+                          color: #1e293b;
+                          font-size: 42px;
+                          font-weight: bold;
+                          margin: 0 0 12px 0;
+                        "
+                      >
+                        __HISTORY_ITEMS_COUNT__
+                      </h2>
+                      <p
+                        style="
+                          color: #64748b;
+                          font-size: 15px;
+                          margin: 0;
+                          font-weight: 500;
+                        "
+                      >
+                        Total Shopping Done
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td
+                class="column"
+                width="50%"
+                style="padding-left: 10px; padding-top: 20px"
+              >
+                <table
+                  role="presentation"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                  width="100%"
+                  class="card"
+                  style="
+                    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                    border-radius: 12px;
+                    border: 1px solid #e2e8f0;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 24px; text-align: center">
+                      <h2
+                        style="
+                          color: #1e293b;
+                          font-size: 42px;
+                          font-weight: bold;
+                          margin: 0 0 12px 0;
+                        "
+                      >
+                        __GROCERY_LISTS_COUNT__
+                      </h2>
+                      <p
+                        style="
+                          color: #64748b;
+                          font-size: 15px;
+                          margin: 0;
+                          font-weight: 500;
+                        "
+                      >
+                        Total Grocery Lists
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="column"
+                width="100%"
+                style="padding: 20px 0 0 0"
+                colspan="2"
+              >
+                <table
+                  role="presentation"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                  width="100%"
+                  class="card"
+                  style="
+                    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                    border-radius: 12px;
+                    border: 1px solid #e2e8f0;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 24px; text-align: center">
+                      <h2
+                        style="
+                          color: #1e293b;
+                          font-size: 42px;
+                          font-weight: bold;
+                          margin: 0 0 12px 0;
+                        "
+                      >
+                        __TODOS_COUNT__
+                      </h2>
+                      <p
+                        style="
+                          color: #64748b;
+                          font-size: 15px;
+                          margin: 0;
+                          font-weight: 500;
+                        "
+                      >
+                        Total Todo Items
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="column"
+                width="100%"
+                style="padding: 20px 0 0 0"
+                colspan="2"
+              >
+                <table
+                  role="presentation"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                  width="100%"
+                  class="card"
+                  style="
+                    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                    border-radius: 12px;
+                    border: 1px solid #e2e8f0;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 24px; text-align: center">
+                      <h2
+                        style="
+                          color: #1e293b;
+                          font-size: 42px;
+                          font-weight: bold;
+                          margin: 0 0 12px 0;
+                        "
+                      >
+                        __STORE_ITEMS_COUNT__
+                      </h2>
+                      <p
+                        style="
+                          color: #64748b;
+                          font-size: 15px;
+                          margin: 0;
+                          font-weight: 500;
+                        "
+                      >
+                        Total Store Items
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
