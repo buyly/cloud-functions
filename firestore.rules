@@ -23,9 +23,34 @@ service cloud.firestore {
     
     // Grocery items collection
     match /grocery-items/{groceryItemId} {
-      allow read: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
-      allow create: if isSignedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
-      allow update, delete: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      // Helper function to check if user is a member of the item's list
+      function isMemberOfItemList(itemData) {
+        let listId = itemData.GroceryListId;
+        return listId != null && exists(/databases/$(database)/documents/grocery-lists/$(listId)) &&
+               (get(/databases/$(database)/documents/grocery-lists/$(listId)).data.owner == request.auth.uid ||
+                request.auth.uid in get(/databases/$(database)/documents/grocery-lists/$(listId)).data.members);
+      }
+
+      // Users can read items if they created them OR are members of the list OR item has no list (personal items)
+      allow read: if isSignedIn() && (
+        isAdmin() ||
+        resource.data.userId == request.auth.uid ||
+        (resource.data.GroceryListId == null) ||
+        isMemberOfItemList(resource.data)
+      );
+
+      // Users can create items if they set themselves as the creator
+      allow create: if isSignedIn() && (
+        isAdmin() ||
+        request.resource.data.userId == request.auth.uid
+      );
+
+      // Users can update/delete items if they created them OR are members of the list
+      allow update, delete: if isSignedIn() && (
+        isAdmin() ||
+        resource.data.userId == request.auth.uid ||
+        isMemberOfItemList(resource.data)
+      );
     }
     
     // History items collection
