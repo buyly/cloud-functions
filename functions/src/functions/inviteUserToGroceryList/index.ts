@@ -1,0 +1,154 @@
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import * as logger from "firebase-functions/logger";
+import * as admin from "firebase-admin";
+
+interface InviteUserToGroceryListRequest {
+  email: string;
+  groceryListId: string;
+}
+
+/**
+ * Callable function to invite a user to a grocery list by email
+ * Looks up the user by email and adds them to the grocery list members
+ */
+export const inviteUserToGroceryList = onCall(
+  {cors: true},
+  async (request) => {
+    // Check if user is authenticated
+    if (!request.auth) {
+      logger.error("Unauthenticated request to inviteUserToGroceryList");
+      throw new HttpsError(
+        "unauthenticated",
+        "You must be authenticated to invite users to a grocery list"
+      );
+    }
+
+    const {
+      email,
+      groceryListId,
+    } = request.data as InviteUserToGroceryListRequest;
+
+    // Validate required fields
+    if (!email || typeof email !== "string") {
+      logger.error("Invalid email provided");
+      throw new HttpsError(
+        "invalid-argument",
+        "A valid email address is required"
+      );
+    }
+
+    if (!groceryListId || typeof groceryListId !== "string") {
+      logger.error("Invalid groceryListId provided");
+      throw new HttpsError(
+        "invalid-argument",
+        "A valid grocery list ID is required"
+      );
+    }
+
+    const invitingUserId = request.auth.uid;
+
+    try {
+      const db = admin.firestore();
+
+      // Find the user by email
+      logger.info(`Looking up user with email: ${email}`);
+      const usersSnapshot = await db
+        .collection("users")
+        .where("email", "==", email.toLowerCase())
+        .limit(1)
+        .get();
+
+      if (usersSnapshot.empty) {
+        logger.warn(`No user found with email: ${email}`);
+        throw new HttpsError(
+          "not-found",
+          "No user found with the provided email address"
+        );
+      }
+
+      const invitedUserDoc = usersSnapshot.docs[0];
+      const invitedUserId = invitedUserDoc.id;
+
+      // Check if user is trying to invite themselves
+      if (invitedUserId === invitingUserId) {
+        logger.warn("User attempted to invite themselves");
+        throw new HttpsError(
+          "invalid-argument",
+          "You cannot invite yourself to the grocery list"
+        );
+      }
+
+      // Get the grocery list
+      const groceryListRef = db.collection("grocery-lists").doc(groceryListId);
+      const groceryListDoc = await groceryListRef.get();
+
+      if (!groceryListDoc.exists) {
+        logger.warn(`Grocery list not found: ${groceryListId}`);
+        throw new HttpsError("not-found", "Grocery list not found");
+      }
+
+      const groceryListData = groceryListDoc.data();
+
+      // Check if the inviting user has permission to invite others
+      // (they should be a member or owner of the list)
+      const members = groceryListData?.members || [];
+      const owner = groceryListData?.owner;
+
+      const isOwner = owner === invitingUserId;
+      const isMember = members.includes(invitingUserId);
+
+      if (!isOwner && !isMember) {
+        logger.warn(
+          `User ${invitingUserId} is not authorized to invite users ` +
+            `to list ${groceryListId}`
+        );
+        throw new HttpsError(
+          "permission-denied",
+          "You do not have permission to invite users to this grocery list"
+        );
+      }
+
+      // Check if the user is already a member
+      if (members.includes(invitedUserId)) {
+        logger.info(
+          `User ${invitedUserId} is already a member of list ${groceryListId}`
+        );
+        throw new HttpsError(
+          "already-exists",
+          "This user is already a member of the grocery list"
+        );
+      }
+
+      // Add the user to the grocery list members
+      await groceryListRef.update({
+        members: admin.firestore.FieldValue.arrayUnion(invitedUserId),
+        updatedAt: new Date().toISOString(),
+      });
+
+      logger.info(
+        `Successfully added user ${invitedUserId} (${email}) to grocery list ` +
+          `${groceryListId}`
+      );
+
+      return {
+        success: true,
+        message: `Successfully invited ${email} to the grocery list`,
+        invitedUserId,
+        groceryListId,
+      };
+    } catch (error) {
+      logger.error("Error in inviteUserToGroceryList:", error);
+
+      // Re-throw HttpsError instances
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+
+      // Handle other errors
+      throw new HttpsError(
+        "internal",
+        `Error inviting user to grocery list: ${(error as Error).message}`
+      );
+    }
+  }
+);

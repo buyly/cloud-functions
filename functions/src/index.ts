@@ -25,3 +25,7 @@ export {onCreateUser} from "./functions/onCreateUser/index.js";
 export {addCreditsToUser} from "./functions/addCreditsToUser/index.js";
 export {checkBudgetAlert} from "./functions/checkBudgetAlert/index.js";
 export {testBudgetAlert} from "./functions/testBudgetAlert/index.js";
+export {testPushNotification} from
+  "./functions/testPushNotification/index.js";
+export {inviteUserToGroceryList} from
+  "./functions/inviteUserToGroceryList/index.js";
