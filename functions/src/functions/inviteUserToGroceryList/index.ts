@@ -1,6 +1,15 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
+import {sendBulkPushNotifications} from "../../helpers/sendPushNotification";
+
+interface PushToken {
+  createdAt: string;
+  deviceId: string;
+  lastUsed: string;
+  platform: "ios" | "android" | string;
+  token: string;
+}
 
 interface InviteUserToGroceryListRequest {
   email: string;
@@ -129,6 +138,62 @@ export const inviteUserToGroceryList = onCall(
         `Successfully added user ${invitedUserId} (${email}) to grocery list ` +
           `${groceryListId}`
       );
+
+      // Send push notification to the invited user
+      try {
+        // Get the invited user's push tokens
+        const invitedUserData = invitedUserDoc.data();
+        const pushTokens =
+          invitedUserData?.pushTokens as PushToken[] | undefined;
+
+        if (pushTokens && pushTokens.length > 0) {
+          // Extract the token strings from the pushTokens array
+          const tokens = pushTokens.map((pt) => pt.token);
+
+          // Get the inviting user's info for personalization
+          const invitingUserDoc = await db
+            .collection("users")
+            .doc(invitingUserId)
+            .get();
+          const invitingUserData = invitingUserDoc.data();
+          const invitingUserName = invitingUserData?.displayName ||
+            invitingUserData?.name ||
+            invitingUserData?.email ||
+            "Someone";
+
+          // Get grocery list name
+          const groceryListName = groceryListData?.name || "a grocery list";
+
+          // Send push notifications to all user's devices
+          await sendBulkPushNotifications({
+            pushTokens: tokens,
+            title: "Added to Grocery List",
+            body: `${invitingUserName} added you to "${groceryListName}"`,
+            data: {
+              type: "grocery_list_invite",
+              groceryListId,
+              invitingUserId,
+              invitingUserName,
+            },
+            channelId: "grocery-list-invites",
+          });
+
+          logger.info(
+            "Sent grocery list invite notification to " +
+              `${tokens.length} device(s) for user ${invitedUserId}`
+          );
+        } else {
+          logger.info(
+            `Skipping notification; user ${invitedUserId} has no push tokens`
+          );
+        }
+      } catch (notificationError) {
+        // Don't fail the invite if notification fails
+        logger.error(
+          "Error sending push notification for grocery list invite:",
+          notificationError
+        );
+      }
 
       return {
         success: true,
