@@ -139,30 +139,58 @@ export const inviteUserToGroceryList = onCall(
           `${groceryListId}`
       );
 
+      // Get user info for notification
+      const invitedUserData = invitedUserDoc.data();
+      const invitingUserDoc = await db
+        .collection("users")
+        .doc(invitingUserId)
+        .get();
+      const invitingUserData = invitingUserDoc.data();
+      const invitingUserName = invitingUserData?.displayName ||
+        invitingUserData?.name ||
+        invitingUserData?.email ||
+        "Someone";
+      const groceryListName = groceryListData?.name || "a grocery list";
+
+      // Create notification document in Firestore
+      try {
+        const notificationData = {
+          userId: invitedUserId,
+          type: "grocery_list_invite",
+          title: "Added to Grocery List",
+          body: `${invitingUserName} added you to "${groceryListName}"`,
+          data: {
+            groceryListId,
+            invitingUserId,
+            invitingUserName,
+            groceryListName,
+          },
+          read: false,
+          dismissed: false,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        };
+
+        await db.collection("notifications").add(notificationData);
+
+        logger.info(
+          `Created notification document for user ${invitedUserId}`
+        );
+      } catch (notificationError) {
+        logger.error(
+          "Error creating notification document:",
+          notificationError
+        );
+      }
+
       // Send push notification to the invited user
       try {
-        // Get the invited user's push tokens
-        const invitedUserData = invitedUserDoc.data();
         const pushTokens =
           invitedUserData?.pushTokens as PushToken[] | undefined;
 
         if (pushTokens && pushTokens.length > 0) {
           // Extract the token strings from the pushTokens array
           const tokens = pushTokens.map((pt) => pt.token);
-
-          // Get the inviting user's info for personalization
-          const invitingUserDoc = await db
-            .collection("users")
-            .doc(invitingUserId)
-            .get();
-          const invitingUserData = invitingUserDoc.data();
-          const invitingUserName = invitingUserData?.displayName ||
-            invitingUserData?.name ||
-            invitingUserData?.email ||
-            "Someone";
-
-          // Get grocery list name
-          const groceryListName = groceryListData?.name || "a grocery list";
 
           // Send push notifications to all user's devices
           await sendBulkPushNotifications({
@@ -184,7 +212,8 @@ export const inviteUserToGroceryList = onCall(
           );
         } else {
           logger.info(
-            `Skipping notification; user ${invitedUserId} has no push tokens`
+            `Skipping push notification; user ${invitedUserId} has no ` +
+              "push tokens"
           );
         }
       } catch (notificationError) {
