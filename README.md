@@ -28,6 +28,8 @@ Try deploying specific functions: Instead of deploying all functions at once, yo
 ```bash
 firebase deploy --only functions:onUserCreate
 firebase deploy --only functions:checkBudgetAlert
+firebase deploy --only functions:inviteUserToGroceryList
+firebase deploy --only functions:onGroceryItemAdded
 
 ```
 

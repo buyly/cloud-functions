@@ -28,3 +28,5 @@ export {testPushNotification} from
   "./functions/testPushNotification/index.js";
 export {inviteUserToGroceryList} from
   "./functions/inviteUserToGroceryList/index.js";
+export {onGroceryItemAdded} from
+  "./functions/onGroceryItemAdded/index.js";

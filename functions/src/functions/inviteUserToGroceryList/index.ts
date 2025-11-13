@@ -32,10 +32,8 @@ export const inviteUserToGroceryList = onCall(
       );
     }
 
-    const {
-      email,
-      groceryListId,
-    } = request.data as InviteUserToGroceryListRequest;
+    const {email, groceryListId} =
+      request.data as InviteUserToGroceryListRequest;
 
     // Validate required fields
     if (!email || typeof email !== "string") {
@@ -146,7 +144,8 @@ export const inviteUserToGroceryList = onCall(
         .doc(invitingUserId)
         .get();
       const invitingUserData = invitingUserDoc.data();
-      const invitingUserName = invitingUserData?.displayName ||
+      const invitingUserName =
+        invitingUserData?.displayName ||
         invitingUserData?.name ||
         invitingUserData?.email ||
         "Someone";
@@ -158,7 +157,7 @@ export const inviteUserToGroceryList = onCall(
           userId: invitedUserId,
           type: "grocery_list_invite",
           title: "Added to Grocery List",
-          body: `${invitingUserName} added you to "${groceryListName}"`,
+          body: `${invitingUserName} added you to ${groceryListName}`,
           data: {
             groceryListId,
             invitingUserId,
@@ -173,9 +172,7 @@ export const inviteUserToGroceryList = onCall(
 
         await db.collection("notifications").add(notificationData);
 
-        logger.info(
-          `Created notification document for user ${invitedUserId}`
-        );
+        logger.info(`Created notification document for user ${invitedUserId}`);
       } catch (notificationError) {
         logger.error(
           "Error creating notification document:",
@@ -185,8 +182,9 @@ export const inviteUserToGroceryList = onCall(
 
       // Send push notification to the invited user
       try {
-        const pushTokens =
-          invitedUserData?.pushTokens as PushToken[] | undefined;
+        const pushTokens = invitedUserData?.pushTokens as
+          | PushToken[]
+          | undefined;
 
         if (pushTokens && pushTokens.length > 0) {
           // Extract the token strings from the pushTokens array
@@ -196,7 +194,7 @@ export const inviteUserToGroceryList = onCall(
           await sendBulkPushNotifications({
             pushTokens: tokens,
             title: "Added to Grocery List",
-            body: `${invitingUserName} added you to "${groceryListName}"`,
+            body: `${invitingUserName} added you to ${groceryListName}`,
             data: {
               type: "grocery_list_invite",
               groceryListId,

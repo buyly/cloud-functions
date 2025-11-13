@@ -70,7 +70,8 @@ service cloud.firestore {
     // Users collection
     match /users/{userId} {
       allow create: if isOwner(userId);
-      allow read: if isOwner(userId) || isAdmin();
+      // Allow any authenticated user to read user profiles (for displaying member info in grocery lists)
+      allow read: if isSignedIn();
       allow update, delete: if isOwner(userId) || isAdmin();
     }
     
