@@ -17,7 +17,6 @@ export {sendGroceryItemsCount} from
   "./functions/sendGroceryItemsCount/index.js";
 export {sendGroceryItemsCountRequest} from
   "./functions/sendGroceryItemsCountRequest/index.js";
-export {hello} from "./functions/hello/index.js";
 export {sendWelcomeEmail} from "./functions/sendWelcomeEmail/index.js";
 export {onUserDeleted} from "./functions/onUserDeleted/index.js";
 export {getUserIACredits} from "./functions/getUserIACredits/index.js";
