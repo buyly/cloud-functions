@@ -20,7 +20,7 @@ npm run build
 ```
 
 ```bash
-npx eslint --ext .js,.ts . --fix
+cd functions && npm run lint -- --fix
 ```
 
 Try deploying specific functions: Instead of deploying all functions at once, you can try deploying just the new function:
@@ -30,6 +30,7 @@ firebase deploy --only functions:onUserCreate
 firebase deploy --only functions:checkBudgetAlert
 firebase deploy --only functions:inviteUserToGroceryList
 firebase deploy --only functions:onGroceryItemAdded
+firebase deploy --only functions:leaveGroceryList
 
 ```
 
