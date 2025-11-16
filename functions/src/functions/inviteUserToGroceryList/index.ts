@@ -11,6 +11,15 @@ interface PushToken {
   token: string;
 }
 
+interface GroceryList {
+  id: string;
+  title: string;
+  owner: string;
+  members: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface InviteUserToGroceryListRequest {
   email: string;
   groceryListId: string;
@@ -94,7 +103,7 @@ export const inviteUserToGroceryList = onCall(
         throw new HttpsError("not-found", "Grocery list not found");
       }
 
-      const groceryListData = groceryListDoc.data();
+      const groceryListData = groceryListDoc.data() as GroceryList | undefined;
 
       // Check if the inviting user has permission to invite others
       // (they should be a member or owner of the list)
@@ -138,18 +147,27 @@ export const inviteUserToGroceryList = onCall(
       );
 
       // Get user info for notification
-      const invitedUserData = invitedUserDoc.data();
+      const invitedUserData = invitedUserDoc.data() as
+        | { pushTokens?: PushToken[]; [key: string]: unknown }
+        | undefined;
       const invitingUserDoc = await db
         .collection("users")
         .doc(invitingUserId)
         .get();
-      const invitingUserData = invitingUserDoc.data();
+      const invitingUserData = invitingUserDoc.data() as
+        | {
+            displayName?: string;
+            name?: string;
+            email?: string;
+            [key: string]: unknown;
+          }
+        | undefined;
       const invitingUserName =
         invitingUserData?.displayName ||
         invitingUserData?.name ||
         invitingUserData?.email ||
         "Someone";
-      const groceryListName = groceryListData?.name || "a grocery list";
+      const groceryListName = groceryListData?.title || "a grocery list";
 
       // Create notification document in Firestore
       try {

@@ -40,6 +40,49 @@ interface GroceryListItem {
   userId: string;
 }
 
+interface NotificationPreference {
+  enabled: boolean;
+  type: string;
+}
+
+interface User {
+  address: string;
+  budget: number;
+  budget_spent: number;
+  budget_target: number;
+  created_at: string;
+  currency: string;
+  deleted_at: string | null;
+  deleted_by: string | null;
+  deleted_reason: string | null;
+  dob: string;
+  email: string;
+  fcm_tokens: string[];
+  gender: string;
+  id: string;
+  imageUrl: string;
+  ip: string;
+  is_budget_alert_set: boolean;
+  is_budget_set: boolean;
+  is_budget_target_set: boolean;
+  is_deleted: boolean;
+  is_onboarding_completed: boolean;
+  language: string;
+  name: string;
+  notification_preferences: NotificationPreference[];
+  notifications: unknown[];
+  notifications_count: number;
+  phoneNumber: string;
+  pushTokens: PushToken[];
+  reference: string;
+  referer: string;
+  support_access: boolean;
+  timezone: string;
+  type: string;
+  updatedAt: string;
+  updated_at: string;
+}
+
 /**
  * Firestore trigger that runs when a new grocery item is added
  * Sends push notifications to all members of the grocery list
@@ -105,12 +148,9 @@ export const onGroceryItemAdded = onDocumentCreated(
         .collection("users")
         .doc(itemData.userId)
         .get();
-      const addedByUserData = addedByUserDoc.data();
+      const addedByUserData = addedByUserDoc.data() as User | undefined;
       const addedByUserName =
-        addedByUserData?.displayName ||
-        addedByUserData?.name ||
-        addedByUserData?.email ||
-        "Someone";
+        addedByUserData?.name || addedByUserData?.email || "Someone";
 
       // Prepare notification content
       const notificationTitle = "New Item Added";
@@ -149,8 +189,8 @@ export const onGroceryItemAdded = onDocumentCreated(
 
           // Get user's push tokens and send push notification
           const userDoc = await db.collection("users").doc(memberId).get();
-          const userData = userDoc.data();
-          const pushTokens = userData?.pushTokens as PushToken[] | undefined;
+          const userData = userDoc.data() as User | undefined;
+          const pushTokens = userData?.pushTokens;
 
           if (pushTokens && pushTokens.length > 0) {
             const tokens = pushTokens.map((pt) => pt.token);
