@@ -118,6 +118,7 @@ export const leaveGroceryList = onCall({cors: true}, async (request) => {
 
     // Create notification document for the owner
     try {
+      const now = new Date().toISOString();
       const notificationData = {
         userId: owner,
         type: "member_left_grocery_list",
@@ -131,8 +132,10 @@ export const leaveGroceryList = onCall({cors: true}, async (request) => {
         },
         read: false,
         dismissed: false,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: now,
+        created_at: now,
+        updatedAt: now,
+        updated_at: now,
       };
 
       await db.collection("notifications").add(notificationData);

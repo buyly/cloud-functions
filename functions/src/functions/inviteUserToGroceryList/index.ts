@@ -153,6 +153,7 @@ export const inviteUserToGroceryList = onCall(
 
       // Create notification document in Firestore
       try {
+        const now = new Date().toISOString();
         const notificationData = {
           userId: invitedUserId,
           type: "grocery_list_invite",
@@ -166,8 +167,10 @@ export const inviteUserToGroceryList = onCall(
           },
           read: false,
           dismissed: false,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          createdAt: now,
+          created_at: now,
+          updatedAt: now,
+          updated_at: now,
         };
 
         await db.collection("notifications").add(notificationData);

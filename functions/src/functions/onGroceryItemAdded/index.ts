@@ -114,8 +114,7 @@ export const onGroceryItemAdded = onDocumentCreated(
 
       // Prepare notification content
       const notificationTitle = "New Item Added";
-      const notificationBody =
-        `${addedByUserName} added "${itemData.name}" to ${groceryListName}`;
+      const notificationBody = `${addedByUserName} added "${itemData.name}" to ${groceryListName}`;
 
       logger.info(`Notifying ${membersToNotify.length} member(s)`);
 
@@ -123,6 +122,7 @@ export const onGroceryItemAdded = onDocumentCreated(
       for (const memberId of membersToNotify) {
         try {
           // Create notification document in Firestore
+          const now = new Date().toISOString();
           const notificationData = {
             userId: memberId,
             type: "grocery_item_added",
@@ -138,8 +138,10 @@ export const onGroceryItemAdded = onDocumentCreated(
             },
             read: false,
             dismissed: false,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            createdAt: now,
+            created_at: now,
+            updatedAt: now,
+            updated_at: now,
           };
 
           await db.collection("notifications").add(notificationData);
