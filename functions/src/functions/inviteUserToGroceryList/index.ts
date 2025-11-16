@@ -2,6 +2,7 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import {sendBulkPushNotifications} from "../../helpers/sendPushNotification";
+import {sendGroceryListInviteEmail} from "../../helpers/sendGroceryListInviteEmail";
 
 interface PushToken {
   createdAt: string;
@@ -76,10 +77,87 @@ export const inviteUserToGroceryList = onCall(
 
       if (usersSnapshot.empty) {
         logger.warn(`No user found with email: ${email}`);
-        throw new HttpsError(
-          "not-found",
-          "No user found with the provided email address"
-        );
+
+        // Get the grocery list to retrieve its name
+        const groceryListRef = db
+          .collection("grocery-lists")
+          .doc(groceryListId);
+        const groceryListDoc = await groceryListRef.get();
+
+        if (!groceryListDoc.exists) {
+          logger.warn(`Grocery list not found: ${groceryListId}`);
+          throw new HttpsError("not-found", "Grocery list not found");
+        }
+
+        const groceryListData = groceryListDoc.data() as
+          | GroceryList
+          | undefined;
+
+        // Check if the inviting user has permission
+        const members = groceryListData?.members || [];
+        const owner = groceryListData?.owner;
+
+        const isOwner = owner === invitingUserId;
+        const isMember = members.includes(invitingUserId);
+
+        if (!isOwner && !isMember) {
+          logger.warn(
+            `User ${invitingUserId} is not authorized to invite users ` +
+              `to list ${groceryListId}`
+          );
+          throw new HttpsError(
+            "permission-denied",
+            "You do not have permission to invite users to this grocery list"
+          );
+        }
+
+        // Get inviting user's information
+        const invitingUserDoc = await db
+          .collection("users")
+          .doc(invitingUserId)
+          .get();
+        const invitingUserData = invitingUserDoc.data() as
+          | {
+              displayName?: string;
+              name?: string;
+              email?: string;
+              [key: string]: unknown;
+            }
+          | undefined;
+        const invitingUserName =
+          invitingUserData?.displayName ||
+          invitingUserData?.name ||
+          invitingUserData?.email ||
+          "Someone";
+        const groceryListName = groceryListData?.title || "a grocery list";
+
+        // Send invitation email to non-existent user
+        try {
+          await sendGroceryListInviteEmail({
+            email: email.toLowerCase(),
+            inviterName: invitingUserName,
+            groceryListName,
+          });
+
+          logger.info(
+            `Sent invitation email to ${email} for grocery list ${groceryListId}`
+          );
+
+          return {
+            success: true,
+            message:
+              `User not found, but an invitation email has been sent to ${email}. ` +
+              "They can join the list once they create an account.",
+            emailSent: true,
+            groceryListId,
+          };
+        } catch (emailError) {
+          logger.error("Error sending invitation email:", emailError);
+          throw new HttpsError(
+            "internal",
+            "User not found and failed to send invitation email"
+          );
+        }
       }
 
       const invitedUserDoc = usersSnapshot.docs[0];

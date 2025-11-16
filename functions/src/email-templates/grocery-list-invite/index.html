@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>You've Been Invited to a Grocery List!</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      .email-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        border: 1px solid #e1e1e1;
+        padding: 20px;
+      }
+      .email-header {
+        background-color: #007bff;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px 8px 0 0;
+      }
+      .email-header h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+      .email-body {
+        padding: 20px;
+      }
+      .email-body h2 {
+        color: #007bff;
+      }
+      .highlight-box {
+        background-color: #f0f8ff;
+        border-left: 4px solid #007bff;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      .cta-button {
+        display: inline-block;
+        background-color: #28a745;
+        color: white;
+        padding: 12px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        margin-top: 20px;
+      }
+      .footer {
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+        margin-top: 20px;
+      }
+      .footer a {
+        color: #007bff;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div class="email-header">
+        <h1>You've Been Invited!</h1>
+      </div>
+      <div class="email-body">
+        <p>Hi there,</p>
+        <p>
+          <strong>{{inviterName}}</strong> has invited you to collaborate on a
+          grocery list in <strong>Buyly</strong>!
+        </p>
+        <div class="highlight-box">
+          <p style="margin: 0">
+            <strong>Grocery List:</strong> {{groceryListName}}
+          </p>
+        </div>
+        <p>
+          Buyly is the smarter, simpler way to organize your shopping. With
+          Buyly, you can:
+        </p>
+        <ul>
+          <li>
+            <strong>Collaborate in real-time</strong> with family, friends, or
+            coworkers
+          </li>
+          <li>
+            <strong>Create and manage shopping lists</strong> for any occasion
+          </li>
+          <li>
+            <strong>Stay organized</strong> with easy-to-use categories and
+            customizable items
+          </li>
+          <li>
+            <strong>Never forget an item</strong> with reminders and real-time
+            syncing across devices
+          </li>
+        </ul>
+        <p>
+          To accept this invitation and start collaborating, you'll need to
+          create a Buyly account. It's quick, easy, and free!
+        </p>
+        <a href="https://web.buyly.co.za/" class="cta-button"
+          >Get Started with Buyly</a
+        >
+        <p style="margin-top: 30px">
+          Once you've created your account with this email address
+          (<strong>{{invitedEmail}}</strong>), you'll automatically have access
+          to the shared grocery list.
+        </p>
+        <p>
+          If you have any questions or need assistance, don't hesitate to reach
+          out to our support team at
+          <a href="mailto:support@buylyapp.com">support@buylyapp.com</a>.
+        </p>
+      </div>
+      <div class="footer">
+        <p>Happy shopping, <br />The <strong>Buyly</strong> Team</p>
+        <p>
+          <small
+            >This invitation was sent to {{invitedEmail}}. If you believe this
+            was sent in error, you can safely ignore this email.</small
+          >
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
