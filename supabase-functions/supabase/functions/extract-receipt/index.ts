@@ -15,7 +15,9 @@ function validateReceiptItems(data: unknown): ReceiptItem[] {
   return data.map((item, index) => {
     // Handle completely invalid items
     if (typeof item !== "object" || item === null) {
-      console.warn(`Item at index ${index} is not an object, returning as unknown`);
+      console.warn(
+        `Item at index ${index} is not an object, returning as unknown`
+      );
       return { i: "unknown", p: 0 };
     }
 
@@ -33,9 +35,13 @@ function validateReceiptItems(data: unknown): ReceiptItem[] {
     if (!hasValidName && hasValidPrice) {
       console.warn(`Item at index ${index} has invalid name, using "unknown"`);
     } else if (hasValidName && !hasValidPrice) {
-      console.warn(`Item at index ${index} ("${itemName}") has invalid price (${p}), using 0`);
+      console.warn(
+        `Item at index ${index} ("${itemName}") has invalid price (${p}), using 0`
+      );
     } else if (!hasValidName && !hasValidPrice) {
-      console.warn(`Item at index ${index} has both invalid name and price, using "unknown" and 0`);
+      console.warn(
+        `Item at index ${index} has both invalid name and price, using "unknown" and 0`
+      );
     }
 
     return { i: itemName, p: itemPrice };
@@ -131,7 +137,16 @@ Deno.serve(async (req) => {
           "X-Title": "Buyly Receipt Extraction",
         },
         body: JSON.stringify({
-          model: "nvidia/nemotron-nano-12b-v2-vl:free",
+          // Available models (uncomment to switch):
+          // model: "openai/gpt-4o", // OpenAI GPT-4 with vision (paid)
+          // model: "anthropic/claude-3.5-sonnet", // Claude 3.5 Sonnet (paid)
+          // model: "google/gemini-pro-vision", // Google Gemini Pro Vision (paid)
+          // model: "nvidia/nemotron-nano-12b-v2-vl:free", // 24seconds NVIDIA free vision model (default)
+          // model: "nvidia/nemotron-nano-12b-v2-vl", //8sec cosco
+          //model: "google/gemini-2.0-flash-exp:free", //4sec cosco
+          // model: "google/gemini-2.0-flash-lite-001", //3sec cosco
+          // model: "google/gemma-3-4b-it", //4sec cosco
+          model: "mistralai/mistral-small-3.1-24b-instruct", //4sec cosco
           messages: [
             {
               role: "user",
@@ -214,7 +229,10 @@ Rules:
       items = validateReceiptItems(rawItems);
     } catch (parseError: unknown) {
       console.error("Failed to parse AI response:", extractedText);
-      const errorMessage = parseError instanceof Error ? parseError.message : "Failed to parse extracted data";
+      const errorMessage =
+        parseError instanceof Error
+          ? parseError.message
+          : "Failed to parse extracted data";
       console.error("Validation error:", errorMessage);
 
       return new Response(
