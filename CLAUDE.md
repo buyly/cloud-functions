@@ -152,7 +152,12 @@ Firestore rules ([firestore.rules](firebase-functions/firestore.rules)) enforce:
 
 ### Supabase Functions
 
-Edge functions use Deno runtime. Example: [upload-receipt](supabase-functions/supabase/functions/upload-receipt/index.ts)
+Edge functions use Deno runtime.
+
+**Available Functions:**
+- `upload-receipt` - Generates presigned URLs for direct R2 uploads
+- `extract-receipt` - AI-powered receipt data extraction
+- `hello-world` - Example/test function for local development
 
 #### upload-receipt Function
 
@@ -185,7 +190,7 @@ Edge functions use Deno runtime. Example: [upload-receipt](supabase-functions/su
 - Presigned URLs allow clients to upload directly to R2 (faster, more reliable)
 - Function only generates signed URLs (instant response)
 
-**Environment Variables Required:**
+**Environment Variables Required (upload-receipt):**
 - `R2_ENDPOINT` - Cloudflare R2 endpoint URL
 - `R2_ACCESS_KEY` - R2 Access Key ID
 - `R2_SECRET_KEY` - R2 Secret Access Key
@@ -204,6 +209,89 @@ supabase functions deploy upload-receipt --project-ref PROJECT_REF
 # Test R2 credentials
 deno run --allow-net --allow-env --allow-sys test-r2.ts
 ```
+
+#### extract-receipt Function
+
+**Purpose:** Extracts structured data from receipt images using AI vision models (GPT-4 Vision, Claude, etc.) via OpenRouter API.
+
+**Usage Flow:**
+1. Client uploads receipt using `upload-receipt` function → receives `publicUrl`
+2. Client calls `extract-receipt` with the `publicUrl` → receives structured JSON data
+3. Client stores extracted items in Firestore/Supabase database
+
+**Request:**
+```bash
+curl 'https://PROJECT.supabase.co/functions/v1/extract-receipt' \
+  -H 'Authorization: Bearer ANON_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "imageUrl": "https://core.buyly.co.za/receipt-xxx.png",
+    "userId": "user123"
+  }'
+```
+
+**Response Structure:**
+```json
+{
+  "success": true,
+  "data": {
+    "merchant": "Whole Foods",
+    "date": "2025-11-21",
+    "items": [
+      {
+        "name": "Organic Bananas",
+        "quantity": 1,
+        "price": 2.99,
+        "category": "produce"
+      }
+    ],
+    "subtotal": 7.49,
+    "tax": 0.60,
+    "total": 8.09,
+    "currency": "USD",
+    "confidence": 0.95
+  },
+  "metadata": {
+    "imageUrl": "https://core.buyly.co.za/receipt-xxx.png",
+    "userId": "user123",
+    "extractedAt": "2025-11-21T10:30:00Z",
+    "tokensUsed": 1250
+  }
+}
+```
+
+**Item Categories:**
+AI automatically categorizes items as: `groceries`, `produce`, `dairy`, `meat`, `beverages`, `snacks`, `household`, `other`
+
+**Environment Variables Required (extract-receipt):**
+- `OPENROUTER_API_KEY` - OpenRouter API key for AI vision models
+
+**Supported Models (via OpenRouter):**
+- `nvidia/nemotron-nano-12b-v2-vl:free` (default) - NVIDIA's free vision model with reasoning
+- `gpt-4o` - OpenAI's GPT-4 with vision
+- `anthropic/claude-3.5-sonnet` - Claude 3.5 Sonnet
+- `google/gemini-pro-vision` - Google Gemini Pro Vision
+
+To change model, edit the `model` field in [extract-receipt/index.ts](supabase-functions/supabase/functions/extract-receipt/index.ts).
+
+**Deployment:**
+```bash
+cd supabase-functions
+supabase secrets set --project-ref PROJECT_REF --env-file .env
+supabase functions deploy extract-receipt --project-ref PROJECT_REF
+```
+
+**Testing Locally:**
+```bash
+supabase functions serve extract-receipt
+```
+
+**Important Notes:**
+- Function uses NVIDIA Nemotron (free model) by default - no per-request cost
+- Processing time: 3-10 seconds depending on image size and model
+- Maximum image size: 20MB (recommended: <5MB for faster processing)
+- Confidence score indicates AI's certainty (0.0-1.0)
+- Reasoning feature enabled for improved accuracy
 
 ## Important Patterns
 
@@ -274,7 +362,8 @@ supabase functions deploy FUNCTION_NAME --project-ref PROJECT_REF
 - **Firestore location:** eur3 (Europe)
 - **Supabase project ref:** zbisfbcmgypcxokydnwc
 - **Service account keys:** Required for admin scripts, never commit to git
-- **Email service:** Resend (requires RESEND_API_KEY)
-- **Push notifications:** Expo (requires EXPO_ACCESS_TOKEN)
+- **Email service:** Resend (requires RESEND_API_KEY in Firebase Functions)
+- **Push notifications:** Expo (requires EXPO_ACCESS_TOKEN in Firebase Functions)
+- **AI service:** OpenRouter (requires OPENROUTER_API_KEY in Supabase Functions)
 - **R2 Storage:** Cloudflare R2 bucket "buylyreceipts" with public CDN at core.buyly.co.za
 - **Migration status:** Active transition from Firebase to Supabase; maintain compatibility with both systems
