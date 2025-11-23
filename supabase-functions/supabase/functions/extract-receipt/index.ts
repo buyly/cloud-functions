@@ -6,6 +6,42 @@ interface ReceiptItem {
   p: number; // price
 }
 
+// Manual validation function (faster than Zod)
+function validateReceiptItems(data: unknown): ReceiptItem[] {
+  if (!Array.isArray(data)) {
+    throw new Error("Response must be an array");
+  }
+
+  return data.map((item, index) => {
+    // Handle completely invalid items
+    if (typeof item !== "object" || item === null) {
+      console.warn(`Item at index ${index} is not an object, returning as unknown`);
+      return { i: "unknown", p: 0 };
+    }
+
+    const { i, p } = item as Record<string, unknown>;
+
+    // Validate item name
+    const hasValidName = typeof i === "string" && i.trim() !== "";
+    const itemName = hasValidName ? i.trim() : "unknown";
+
+    // Validate price
+    const hasValidPrice = typeof p === "number" && p > 0 && isFinite(p);
+    const itemPrice = hasValidPrice ? p : 0;
+
+    // Log warnings for invalid data
+    if (!hasValidName && hasValidPrice) {
+      console.warn(`Item at index ${index} has invalid name, using "unknown"`);
+    } else if (hasValidName && !hasValidPrice) {
+      console.warn(`Item at index ${index} ("${itemName}") has invalid price (${p}), using 0`);
+    } else if (!hasValidName && !hasValidPrice) {
+      console.warn(`Item at index ${index} has both invalid name and price, using "unknown" and 0`);
+    }
+
+    return { i: itemName, p: itemPrice };
+  });
+}
+
 interface ErrorResponse {
   error: string;
   message: string;
@@ -172,18 +208,19 @@ Rules:
       const cleanedText = extractedText
         .replace(/```json\n?|\n?```/g, "")
         .trim();
-      items = JSON.parse(cleanedText);
+      const rawItems = JSON.parse(cleanedText);
 
-      // Validate array format
-      if (!Array.isArray(items)) {
-        throw new Error("Response is not an array");
-      }
-    } catch (parseError) {
+      // Validate with manual validation (faster than Zod)
+      items = validateReceiptItems(rawItems);
+    } catch (parseError: unknown) {
       console.error("Failed to parse AI response:", extractedText);
+      const errorMessage = parseError instanceof Error ? parseError.message : "Failed to parse extracted data";
+      console.error("Validation error:", errorMessage);
+
       return new Response(
         JSON.stringify({
           error: "Parse error",
-          message: "Failed to parse extracted data",
+          message: errorMessage,
         } as ErrorResponse),
         {
           status: 500,

@@ -15,6 +15,8 @@ Alternatively, you can deploy directly to Supabase without local testing:
 supabase functions deploy hello-world
 ```
 
+cd supabase-functions
+supabase functions deploy extract-receipt
 Set secrets:
 
 ```bash
