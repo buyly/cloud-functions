@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.unstable", "dom", "esnext"]
+  },
+  "imports": {
+    "@supabase/functions-js/": "https://esm.sh/@supabase/functions-js@2.1.5/",
+    "@aws-sdk/client-s3": "npm:@aws-sdk/client-s3@3.682.0"
+  }
+}
